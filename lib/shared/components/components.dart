@@ -1,34 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:todo/todo!app/cubit.dart';
 
+import '../../todo_layout/cubit.dart';
 
-Widget defaultButton({
-  double width = double.infinity,
-  Color? color = Colors.blue,
-  bool isUpperCase = true,
-  double radius = 0.0,
-  required Function function,
-  required String text,
-}) =>
-    Container(
-      width: width,
-      height: 50.0,
-      child: MaterialButton(
-        child: Text(
-          isUpperCase ? text.toUpperCase() : text,
-          style: TextStyle(
-            color: Colors.white,
-          ),
-        ),
-        onPressed: () {
-          function();
-        },
-      ),
-      decoration: BoxDecoration(
-        color: color,
-        borderRadius: BorderRadius.circular(radius),
-      ),
-    );
 
 Widget defaultTextField({
   required String label,
@@ -41,8 +14,7 @@ Widget defaultTextField({
   bool obscureText = false,
   Function? suffixPressed,
   Function? onTapUp,
-}) =>
-    TextFormField(
+}) => TextFormField(
       controller: controller,
       onTap:  (){
         onTapUp!();
@@ -70,7 +42,8 @@ Widget defaultTextField({
       ),
       validator: validate,
     );
-//a//aa//a
+
+
 Widget buildTaskItem(Map model, context) => Dismissible(
       key: Key(model['id'].toString()),
       onDismissed: (direction) {
@@ -84,13 +57,13 @@ Widget buildTaskItem(Map model, context) => Dismissible(
               radius: 35.0,
               child: Text(
                 '${model['time']}',
-                style: TextStyle(
+                style: const TextStyle(
                   fontSize: 14,
                   fontWeight: FontWeight.bold,
                 ),
               ),
             ),
-            SizedBox(
+            const SizedBox(
               width: 10,
             ),
             Expanded(
@@ -100,12 +73,9 @@ Widget buildTaskItem(Map model, context) => Dismissible(
                 children: [
                   Text(
                     '${model['title']}',
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 18,
-                    ),
+                    style: Theme.of(context).textTheme.bodyText1,
                   ),
-                  SizedBox(
+                  const SizedBox(
                     height: 5,
                   ),
                   Text(
@@ -123,12 +93,12 @@ Widget buildTaskItem(Map model, context) => Dismissible(
                 AppCubit.get(context)
                     .updateDatabase(status: 'done', id: model['id']);
               },
-              icon: Icon(
+              icon: const Icon(
                 Icons.check_circle_outline,
                 color: Colors.green,
               ),
             ),
-            SizedBox(
+            const SizedBox(
               width: 10,
             ),
             IconButton(
@@ -136,14 +106,48 @@ Widget buildTaskItem(Map model, context) => Dismissible(
                 AppCubit.get(context)
                     .updateDatabase(status: 'archive', id: model['id']);
               },
-              icon: Icon(
+              icon: const Icon(
                 Icons.archive_outlined,
-                color: Colors.black45,
+                color: Colors.grey,
               ),
             ),
           ],
         ),
       ),
     );
+
+
+Widget noItemYet(context)
+{
+  return Center(
+    child: Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children:  [
+        const Icon(Icons.menu,
+          size: 100.0,
+          color: Colors.grey,),
+        const SizedBox(
+          height: 10,
+        ),
+        Text(
+          'Sorry not tasks yet please add some tasks',
+          style: Theme.of(context).textTheme.bodyText1,
+        ),
+      ],
+    ),
+  );
+}
+
+Widget listBuilder(List<Map> tasks1){
+  return ListView.separated(
+    itemBuilder: (context , index)=>buildTaskItem(tasks1[index], context),
+    separatorBuilder: (context , index)=> Container(
+      width: double.infinity,
+      height: 1,
+      color: Colors.grey[300],
+    ),
+    itemCount: tasks1.length,
+  );
+}
 
 
